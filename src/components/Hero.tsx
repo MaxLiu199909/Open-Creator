@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { PlusCircle } from 'lucide-react';
@@ -9,13 +9,18 @@ import ParticleEffect from './ParticleEffect';
 export default function Hero() {
   const [ref, inView] = useInView({
     threshold: 0.1,
-    triggerOnce: false
+    triggerOnce: true
   });
 
   const { scrollY } = useScroll();
   const textScale = useTransform(scrollY, [0, 300], [1, 1.5]);
   const textOpacity = useTransform(scrollY, [0, 300], [1, 0]);
   const maskSize = useTransform(scrollY, [0, 300], ['100%', '150%']);
+
+  const handleCreateProject = useCallback(() => {
+    // 处理创建项目的逻辑
+    console.log('Creating new project...');
+  }, []);
 
   return (
     <motion.section
@@ -43,7 +48,8 @@ export default function Hero() {
             transition={{
               duration: 10,
               repeat: Infinity,
-              ease: "linear"
+              ease: "linear",
+              repeatType: "mirror"
             }}
           />
           
@@ -55,6 +61,7 @@ export default function Hero() {
               backgroundImage: "linear-gradient(135deg, #fff 30%, #4a90e2 100%)",
               maskImage: "radial-gradient(circle at center, black, transparent)",
               maskSize,
+              willChange: 'transform'
             }}
           >
             AI Workflows<br/>for ALL Designers
@@ -68,6 +75,7 @@ export default function Hero() {
           transition={{ delay: 0.5 }}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
+          onClick={handleCreateProject}
         >
           <PlusCircle size={24} />
           Create New Project
@@ -82,7 +90,8 @@ export default function Hero() {
         transition={{
           duration: 4,
           repeat: Infinity,
-          ease: "easeInOut"
+          ease: "easeInOut",
+          repeatType: "mirror"
         }}
       />
 
@@ -95,7 +104,11 @@ export default function Hero() {
         <motion.div
           className="w-6 h-10 border-2 border-white/30 rounded-full p-2"
           animate={{ y: [0, 8, 0] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
+          transition={{ 
+            duration: 1.5, 
+            repeat: Infinity,
+            repeatType: "mirror"
+          }}
         >
           <div className="w-1.5 h-1.5 bg-white/30 rounded-full" />
         </motion.div>

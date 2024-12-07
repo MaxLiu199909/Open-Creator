@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useMemo } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 
 interface Particle {
@@ -15,37 +15,55 @@ export default function ParticleEffect() {
   const { scrollY } = useScroll();
   const particles = useRef<Particle[]>([]);
   const animationRef = useRef<number>();
+  const lastTimeRef = useRef<number>(0);
 
   const opacity = useTransform(scrollY, [0, 200], [0, 1]);
+
+  const createParticles = useMemo(() => (width: number, height: number) => {
+    const particleCount = Math.min(100, Math.floor((width * height) / 20000));
+    return Array.from({ length: particleCount }, () => ({
+      x: Math.random() * width,
+      y: Math.random() * height,
+      size: Math.random() * 2 + 1,
+      speedX: (Math.random() - 0.5) * 1.5,
+      speedY: (Math.random() - 0.5) * 1.5,
+      opacity: Math.random()
+    }));
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', { alpha: true });
     if (!ctx) return;
 
-    const createParticles = () => {
-      const particleCount = 100;
-      particles.current = Array.from({ length: particleCount }, () => ({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        size: Math.random() * 3 + 1,
-        speedX: (Math.random() - 0.5) * 2,
-        speedY: (Math.random() - 0.5) * 2,
-        opacity: Math.random()
-      }));
-    };
-
     const resizeCanvas = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      createParticles();
+      const dpr = window.devicePixelRatio || 1;
+      const displayWidth = window.innerWidth;
+      const displayHeight = window.innerHeight;
+
+      canvas.width = displayWidth * dpr;
+      canvas.height = displayHeight * dpr;
+      canvas.style.width = `${displayWidth}px`;
+      canvas.style.height = `${displayHeight}px`;
+      
+      ctx.scale(dpr, dpr);
+      particles.current = createParticles(displayWidth, displayHeight);
     };
 
-    const animate = () => {
+    const animate = (timestamp: number) => {
+      if (!ctx) return;
+      
+      if (timestamp - lastTimeRef.current < 33) {
+        animationRef.current = requestAnimationFrame(animate);
+        return;
+      }
+      
+      lastTimeRef.current = timestamp;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
+      ctx.beginPath();
       particles.current.forEach(particle => {
         particle.x += particle.speedX;
         particle.y += particle.speedY;
@@ -57,18 +75,22 @@ export default function ParticleEffect() {
           particle.y = Math.random() * canvas.height;
         }
 
-        ctx.beginPath();
+        if (particle.x < 0 || particle.x > canvas.width) particle.speedX *= -1;
+        if (particle.y < 0 || particle.y > canvas.height) particle.speedY *= -1;
+
+        ctx.moveTo(particle.x, particle.y);
         ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255, 255, 255, ${particle.opacity})`;
-        ctx.fill();
       });
+      
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+      ctx.fill();
 
       animationRef.current = requestAnimationFrame(animate);
     };
 
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
-    animate();
+    animate(0);
 
     return () => {
       window.removeEventListener('resize', resizeCanvas);
@@ -76,7 +98,7 @@ export default function ParticleEffect() {
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, []);
+  }, [createParticles]);
 
   return (
     <motion.canvas

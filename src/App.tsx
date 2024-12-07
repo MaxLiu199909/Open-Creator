@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, createRoutesFromElements } from 'react-router-dom';
 import Hero from './components/Hero';
 import ProjectsSection from './components/ProjectsSection';
 import GallerySection from './components/GallerySection';
@@ -12,7 +12,7 @@ import { AuthProvider } from './contexts/AuthContext';
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/Open-Creator" future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <AuthProvider>
         <LanguageProvider>
           <div className="min-h-screen bg-black text-white cursor-none">
