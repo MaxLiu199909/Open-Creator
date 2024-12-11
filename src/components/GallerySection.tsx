@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { Sparkles } from 'lucide-react';
 import GalleryItem from './GalleryItem';
+import { GalleryItem as GalleryItemType } from '../types/components';
+import { AutoSizer, Grid } from 'react-virtualized';
 
-const gallery = [
+const gallery: GalleryItemType[] = [
   { id: 1, author: 'Neo', image: 'https://images.unsplash.com/photo-1679083216051-aa510a1a2c0e?w=800&auto=format&fit=crop' },
   { id: 2, author: 'Trinity', image: 'https://images.unsplash.com/photo-1708616748538-bdd66d6a9e25?w=800&auto=format&fit=crop' },
   { id: 3, author: 'Morpheus', image: 'https://images.unsplash.com/photo-1708638781158-21d9d946c4db?w=800&auto=format&fit=crop' },
@@ -17,6 +19,25 @@ export default function GallerySection() {
     triggerOnce: false
   });
 
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 1000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const handleGalleryClick = useCallback((itemId: number) => {
+    console.log('Gallery item clicked:', itemId);
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-white"></div>
+      </div>
+    );
+  }
+
   return (
     <motion.section
       ref={ref}
@@ -26,7 +47,7 @@ export default function GallerySection() {
       transition={{ duration: 0.8 }}
     >
       <div className="max-w-7xl mx-auto">
-        <motion.div 
+        <motion.div
           className="flex items-center gap-3 mb-12"
           initial={{ x: -20 }}
           animate={{ x: 0 }}
@@ -38,11 +59,27 @@ export default function GallerySection() {
           </h3>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {gallery.map((item) => (
-            <GalleryItem key={item.id} item={item} />
-          ))}
-        </div>
+        <AutoSizer>
+          {({ width, height }) => (
+            <Grid
+              cellRenderer={({ columnIndex, key, rowIndex, style }) => {
+                const index = rowIndex * 4 + columnIndex;
+                if (index >= gallery.length) return null;
+                return (
+                  <div key={key} style={style} onClick={() => handleGalleryClick(gallery[index].id)}>
+                    <GalleryItem item={gallery[index]} />
+                  </div>
+                );
+              }}
+              columnCount={4}
+              columnWidth={width / 4}
+              height={height}
+              rowCount={Math.ceil(gallery.length / 4)}
+              rowHeight={320}
+              width={width}
+            />
+          )}
+        </AutoSizer>
       </div>
     </motion.section>
   );
