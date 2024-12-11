@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { PlusCircle } from 'lucide-react';
@@ -16,6 +16,22 @@ export default function ProjectsSection() {
     triggerOnce: false
   });
 
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulate data loading
+    const timer = setTimeout(() => setIsLoading(false), 1000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-white"></div>
+      </div>
+    );
+  }
+
   return (
     <motion.section
       ref={ref}
@@ -29,7 +45,7 @@ export default function ProjectsSection() {
           <h3 className="text-4xl font-bold bg-gradient-to-r from-white to-purple-400 bg-clip-text text-transparent">
             Your Projects
           </h3>
-          <motion.button 
+          <motion.button
             className="flex items-center gap-2 bg-white text-black px-6 py-3 rounded-full font-bold hover:bg-white/90 transition"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}

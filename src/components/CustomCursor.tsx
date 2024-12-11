@@ -8,7 +8,7 @@ export default function CustomCursor() {
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       setMousePosition({ x: e.clientX, y: e.clientY });
-      
+
       const target = e.target as HTMLElement;
       setIsPointer(window.getComputedStyle(target).cursor === 'pointer');
     };
@@ -32,6 +32,7 @@ export default function CustomCursor() {
           stiffness: 100,
           damping: 10,
         }}
+        aria-hidden="true"
       />
       <motion.div
         className="fixed top-0 left-0 w-8 h-8 border border-white rounded-full pointer-events-none mix-blend-difference z-50"
@@ -46,6 +47,7 @@ export default function CustomCursor() {
           stiffness: 50,
           damping: 8,
         }}
+        aria-hidden="true"
       />
     </>
   );

@@ -33,7 +33,7 @@ export default function Hero() {
       <Navbar />
       <BackgroundReel />
       <ParticleEffect />
-      
+
       <div className="relative z-10 flex flex-col items-center gap-12">
         <motion.div
           className="relative"
@@ -52,7 +52,7 @@ export default function Hero() {
               repeatType: "mirror"
             }}
           />
-          
+
           <motion.h2
             className="text-[8vw] font-black text-center leading-tight mix-blend-overlay relative"
             style={{
@@ -76,6 +76,8 @@ export default function Hero() {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={handleCreateProject}
+          aria-label="Create New Project"
+          role="button"
         >
           <PlusCircle size={24} />
           Create New Project
@@ -104,8 +106,8 @@ export default function Hero() {
         <motion.div
           className="w-6 h-10 border-2 border-white/30 rounded-full p-2"
           animate={{ y: [0, 8, 0] }}
-          transition={{ 
-            duration: 1.5, 
+          transition={{
+            duration: 1.5,
             repeat: Infinity,
             repeatType: "mirror"
           }}
