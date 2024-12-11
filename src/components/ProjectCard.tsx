@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { motion } from 'framer-motion';
 
 interface ProjectCardProps {
@@ -10,16 +10,16 @@ interface ProjectCardProps {
   };
 }
 
-export default function ProjectCard({ project }: ProjectCardProps) {
+const ProjectCard = memo(({ project }: ProjectCardProps) => {
   return (
     <motion.div
       className="bg-white/5 rounded-2xl overflow-hidden hover:bg-white/10 transition cursor-pointer group"
       whileHover={{ scale: 1.02 }}
     >
       <div className="relative overflow-hidden">
-        <motion.img 
-          src={project.preview} 
-          alt={project.title} 
+        <motion.img
+          src={project.preview}
+          alt={project.title}
           className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -32,4 +32,8 @@ export default function ProjectCard({ project }: ProjectCardProps) {
       </div>
     </motion.div>
   );
-}
+});
+
+ProjectCard.displayName = 'ProjectCard';
+
+export default ProjectCard;
