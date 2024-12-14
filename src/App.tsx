@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, createRoutesFromElements } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Hero from './components/Hero';
 import ProjectsSection from './components/ProjectsSection';
 import GallerySection from './components/GallerySection';
@@ -7,6 +7,7 @@ import CustomCursor from './components/CustomCursor';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import LoginPage from './pages/LoginPage';
+import Canvas from './components/canvas/Canvas';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { AuthProvider } from './contexts/AuthContext';
 
@@ -20,6 +21,7 @@ function App() {
             <Navbar />
             <Routes>
               <Route path="/login" element={<LoginPage />} />
+              <Route path="/canvas" element={<Canvas />} />
               <Route path="/" element={
                 <>
                   <Hero />
